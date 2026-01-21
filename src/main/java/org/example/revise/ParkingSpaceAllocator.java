@@ -30,7 +30,7 @@ public class ParkingSpaceAllocator {
         return output;
     }
 
-    public static Map<String, String> parkCars(List<Car> cars, List<Parking> parkingList) {
+    public static void parkCars(List<Car> cars, List<Parking> parkingList) {
         cars.sort(Comparator.comparing(Car::size).reversed());
         parkingList.sort(Comparator.comparing(Parking::size));
         // Parking id -> Car id
@@ -46,8 +46,6 @@ public class ParkingSpaceAllocator {
         System.out.println("Total wasted space: " + wastedSpace);
         System.out.print("Assignments:");
         outputAssignments(parkingAllocation);
-
-        return parkingAllocation;
     }
 
     private static int findMinimumSpace(List<Parking> parkingList, Car car, Map<String, String> allocation) {
