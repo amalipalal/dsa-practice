@@ -31,7 +31,7 @@ public class ParkingSpaceAllocator {
     }
 
     public static Map<String, String> parkCars(List<Car> cars, List<Parking> parkingList) {
-        cars.sort(Comparator.comparing(Car::size));
+        cars.sort(Comparator.comparing(Car::size).reversed());
         parkingList.sort(Comparator.comparing(Parking::size));
         // Parking id -> Car id
         Map<String, String> parkingAllocation = new HashMap<String, String>();
@@ -75,7 +75,6 @@ public class ParkingSpaceAllocator {
         });
     }
 }
-
 
 record Car(
         String id,
