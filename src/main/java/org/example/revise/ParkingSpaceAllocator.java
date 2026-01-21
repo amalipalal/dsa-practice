@@ -6,28 +6,33 @@ import java.util.stream.Collectors;
 public class ParkingSpaceAllocator {
 
     public static void main(String[] args) {
-        List<Car> cars = new ArrayList<>(Arrays.asList(
-                new Car("CAR1", 18),
-                new Car("CAR2", 24),
-                new Car("SUV1", 16),
-                new Car("TRUCK", 28),
-                new Car("VAN", 21)
-        ));
-
-        List<Parking> parkingList = new ArrayList<>(Arrays.asList(
-                new Parking("A1", 20),
-                new Parking("A2", 25),
-                new Parking("A3", 18),
-                new Parking("B1", 30),
-                new Parking("B2", 22)
-        ));
+        List<Parking> parkingList = formatParkingInput("P1 15 P2 20 P3 25");
+        List<Car> cars = formatCarInput("V1 22 V2 18 V3 14 V4 12");
 
         parkCars(cars, parkingList);
     }
 
+    public static List<Car> formatCarInput(String carInput) {
+        String[] input = carInput.split("\\s");
+        List<Car> output = new ArrayList<>();
+        for (int idPosition = 0; idPosition < input.length - 1; idPosition+=2) {
+            output.add(new Car(input[idPosition], Integer.parseInt(input[idPosition + 1])));
+        }
+        return output;
+    }
+
+    public static List<Parking> formatParkingInput(String parkingInput) {
+        String[] input = parkingInput.split("\\s");
+        List<Parking> output = new ArrayList<>();
+        for (int idPosition = 0; idPosition < input.length - 1; idPosition+=2) {
+            output.add(new Parking(input[idPosition], Integer.parseInt(input[idPosition + 1])));
+        }
+        return output;
+    }
+
     public static Map<String, String> parkCars(List<Car> cars, List<Parking> parkingList) {
-        cars.sort(Comparator.comparing(Car::getSize));
-        parkingList.sort(Comparator.comparing(Parking::getSize));
+        cars.sort(Comparator.comparing(Car::size));
+        parkingList.sort(Comparator.comparing(Parking::size));
         // Parking id -> Car id
         Map<String, String> parkingAllocation = new HashMap<String, String>();
 
@@ -43,15 +48,14 @@ public class ParkingSpaceAllocator {
         outputAssignments(parkingAllocation);
 
         return parkingAllocation;
-
     }
 
     private static int findMinimumSpace(List<Parking> parkingList, Car car, Map<String, String> allocation) {
         for (Parking parking : parkingList) {
-            if (allocation.containsKey(parking.getId())) continue;
-            if(car.getSize() > parking.getSize()) continue;
-            allocation.put(parking.getId(), car.getId());
-            return parking.getSize() - car.getSize();
+            if (allocation.containsKey(parking.id())) continue;
+            if(car.size() > parking.size()) continue;
+            allocation.put(parking.id(), car.id());
+            return parking.size() - car.size();
         }
         return 0;
     }
@@ -73,36 +77,12 @@ public class ParkingSpaceAllocator {
 }
 
 
-class Car {
-    public String id;
-    public int size;
-    public Car(String id, int size) {
-        this.id = id;
-        this.size = size;
-    }
+record Car(
+        String id,
+        int size
+) {}
 
-    public String getId() {
-        return id;
-    }
-
-    public int getSize() {
-        return size;
-    }
-}
-
-class Parking {
-    public String id;
-    public int size;
-    public Parking(String id, int size) {
-        this.id = id;
-        this.size = size;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public int getSize() {
-        return size;
-    }
-}
+record Parking(
+        String id,
+        int size
+) {}
