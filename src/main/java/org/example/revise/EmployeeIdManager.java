@@ -1,7 +1,9 @@
 package org.example.revise;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
 
 public class EmployeeIdManager {
 
@@ -18,6 +20,10 @@ public class EmployeeIdManager {
         manager.height();
         manager.pathToEmployee(20000);
         manager.displayEmployees();
+
+        manager.deleteEmployee(20000);
+
+        manager.displayEmployeesAtSameLevel();
     }
 
     private class Employee {
@@ -49,17 +55,11 @@ public class EmployeeIdManager {
     }
 
     private Employee add(Employee root, Employee key) {
-        if(root == null) {
-            return key;
-        }
+        if(root == null) return key;
 
-        if(key.id < root.id)  {
-            root.leftEmployee = add(root.leftEmployee, key);
-        } else if (key.id > root.id) {
-            root.rightEmployee = add(root.rightEmployee, key);
-        } else {
-            root.salary = key.salary;
-        }
+        if(key.id < root.id) root.leftEmployee = add(root.leftEmployee, key);
+        else if (key.id > root.id) root.rightEmployee = add(root.rightEmployee, key);
+        else root.salary = key.salary;
 
         return root;
     }
@@ -130,5 +130,86 @@ public class EmployeeIdManager {
         output.add(root.id);
         preOrderSearch(root.leftEmployee, id, output);
         preOrderSearch(root.rightEmployee, id, output);
+    }
+
+    public void deleteEmployee(int id) {
+        delete(root, id);
+        System.out.println("Deleted Employee: " + id);
+        displayEmployees();
+    }
+
+    public Employee delete(Employee root, int id) {
+        if(root == null) return null;
+
+        if(id < root.id)
+            root.leftEmployee = delete(root.leftEmployee, id);
+        else if (id > root.id) {
+            root.rightEmployee = delete(root.rightEmployee, id);
+        } else {
+            // Case 1: No children
+            if(root.leftEmployee == null && root.rightEmployee == null) return null;
+
+            // Case 2: One child
+            if(root.leftEmployee == null) return root.rightEmployee;
+            if(root.rightEmployee == null) return root.leftEmployee;
+
+            // Case 3: Both children
+            // Find the minimum in the right tree and replace with key then make successor null;
+            Employee successor = findMinimum(root.rightEmployee);
+            root.id = successor.id;
+            root.rightEmployee = delete(root.rightEmployee, successor.id);
+        }
+
+        return root;
+    }
+
+    public Employee findMinimum(Employee root) {
+        Employee currentNode = root;
+        while (currentNode.leftEmployee != null) {
+            currentNode = currentNode.leftEmployee;
+        }
+        return currentNode;
+    }
+
+    public void displayEmployeesAtSameLevel() {
+        List<List<Employee>> output = new ArrayList<>();
+        levelOrderTraversal(root, output);
+        System.out.println("Employees at same level: " + output);
+    }
+
+    private void levelOrderTraversal(Employee root, List<List<Employee>> output) {
+        if(root == null) return;
+
+        Queue<Employee> queue = new ArrayDeque<>();
+        queue.add(root);
+        while (!queue.isEmpty()) {
+            int levelSize = queue.size();
+            List<Employee> level = new ArrayList<>();
+            for (int i = 0; i < levelSize; i++) {
+                Employee currentEmployee = queue.remove();
+                level.add(currentEmployee);
+
+                if (currentEmployee.rightEmployee != null) queue.add(currentEmployee.rightEmployee);
+                if(currentEmployee.leftEmployee != null) queue.add(currentEmployee.leftEmployee);
+            }
+            output.add(level);
+        }
+    }
+
+    public void addEmployeePractice(int id, double salary) {
+        var newEmployee = new Employee(id, salary);
+        root = addPractice(root, newEmployee);
+    }
+
+    private Employee addPractice(Employee root, Employee newNode) {
+        if(root == null) {
+            return newNode;
+        }
+
+        if(newNode.id < root.id) root.leftEmployee = addPractice(root.leftEmployee, newNode);
+        else if(newNode.id > root.id) root.rightEmployee = addPractice(root.rightEmployee, newNode);
+        else root.salary = newNode.salary;
+
+        return root;
     }
 }
