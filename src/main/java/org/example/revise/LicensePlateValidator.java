@@ -19,11 +19,6 @@ public class LicensePlateValidator {
             return;
         }
 
-        if(plate.length() < 6) {
-            System.out.println("Invalid length of characters");
-            return;
-        }
-
         if(!plate.matches("[A-Za-z0-9\\S-_]+$")) {
             System.out.println("Invalid characters");
             return;
@@ -31,27 +26,23 @@ public class LicensePlateValidator {
 
         String plateWithoutSeparators = plate.replaceAll("[\\s-_]", "");
 
-        if(plateWithoutSeparators.length() < 6 || plateWithoutSeparators.length() > 8) {
-            System.out.println("Invalid length of characters");
-            return;
-        }
-
         if(plateWithoutSeparators.length() == 6) {
             if(!isValidBody(plateWithoutSeparators)) {
                 System.out.println("Invalid body");
                 return;
             }
             System.out.println(formatMain(plateWithoutSeparators));
-        }
-        else if (plateWithoutSeparators.length() == 8) {
-            String mainBody = plateWithoutSeparators.substring(2);
+        } else if (plateWithoutSeparators.length() == 8) {
             String regionCode = plateWithoutSeparators.substring(0,2);
+            String mainBody = plateWithoutSeparators.substring(2);
             if(!isValidRegionCode(regionCode) || !isValidBody(mainBody)) {
                 System.out.println("Invalid");
                 return;
             }
             String outputString = plateWithoutSeparators.substring(0,2) + "-" + formatMain(mainBody);
             System.out.println(outputString);
+        } else {
+            System.out.println("Invalid length of characters");
         }
     }
 
